@@ -22,16 +22,15 @@ db.initialize(process.env.MONGODB_CONN_STRING).then(()=>{
 app.post('/api/listings', async (req, res) => {
   try {
     console.log(req.body);
-    await db.addNewListing(req.body);
-   
+    const newListing = await db.addNewListing(req.body);
 
     // Respond with the newly created listing
-    res.status(201).json({message: `add a new listing item: ${req.body._id} ${req.body.name}`});
+    res.status(201).send({message: `add a new listing item: ${newListing}`});
   } catch (err) {
     console.error("Error creating listing:", err);
 
     // Handle errors
-    res.status(500).json({ err: "Failed to create listing. Please try again later." });
+    res.status(500).send({ message :err});
   }
 });
 
@@ -51,8 +50,8 @@ app.get('/api/listings', async (req, res) => {
 
 
     // Ensure page and perPage are valid numbers
-    if (!+pageNumber && !+perPageNumber) {
-      return res.status("400").json({ error: 'page and perPage must be valid numbers.' });
+    if (!+pageNumber || !+perPageNumber) {
+      return res.status(400).send({ message: 'page and perPage must be valid numbers.' });
     }
 
     // Call the database function to fetch listings
@@ -61,10 +60,10 @@ app.get('/api/listings', async (req, res) => {
     // Respond with the listings
     res.send(listings);
   } catch (err) {
-    res.status("500").send({message:err});
+    res.status(500).send({message:err});
   }
 });
-
+// GET listing iterm by id
 app.get('/api/listings/:id', async (req, res) => {
     try {
       // Extract the _id from the route parameter
@@ -73,42 +72,47 @@ app.get('/api/listings/:id', async (req, res) => {
       // Fetch the listing by _id from the database
       const listing = await db.getListingById(listID);
   
-      // Return the listing to the client
-      res.status(200).json(listing);
+      // Return the listing 
+      res.status(200).send({message: listing})
     } catch (err) {
       console.error("Error retrieving listing:", err);
   
-      res.status(500).json({ error: "An error occurred while retrieving the listing." });
+      res.status(500).send({message : err});
     }
   });
 
-//update listing by id
+//UPDATE listing item by id
 app.put('/api/listings/:id', async (req, res) => {
     try {
   
-      // Update the listing by _id
-      const updatedListing = await db.updateListingById(req.body,req.params.id);
-  
-      if (!updatedListing) {
-        // If no listing is found, return a 404 status
-        return res.status(404).json({ error: `Listing with ID ${id} not found.` });
-      }
+      // Update the listing by id
+      await db.updateListingById(req.body,req.params.id);
   
       // Return a success message with the updated listing
-      res.status(200).json({ message: "Listing updated successfully.", listing: updatedListing });
+      res.status(200).send({ message: `Listing updated successfully.`});
     } catch (err) {
+        
       console.error("Error updating listing:", err);
+
   
-      // Handle invalid ObjectId or other errors
-      if (err.name === 'CastError' && err.kind === 'ObjectId') {
-        return res.status(400).json({ error: "Invalid ID format." });
-      }
-  
-      res.status(500).json({ error: "An error occurred while updating the listing." });
+      res.status(500).send({message:err});
     }
   });
 
+// DELETE listing by id
 
+app.delete('/api/listings/:id', async(req, res) => {
+    try {
+        // delete the listing item by id
+        await db.deleteListingById(req.params.id);
+        // return a success message
+        res.send({
+            message: `deleted item with identifier: ${req.params.id}`,
+        });
+    }catch(err){
+        res.status(404).send({message:err});
+    }
+});
 
 
 

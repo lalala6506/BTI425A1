@@ -24,7 +24,6 @@ module.exports = class ListingsDB {
 
   async addNewListing(data) {
     const newListing = new this.Listing(data);
-    console.log("New listing:", newListing);
     await newListing.save();
     return newListing;
   }
