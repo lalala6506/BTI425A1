@@ -23,7 +23,15 @@ const db = new ListingsDB();
 app.use(express.json());
 
 
+db.initialize(process.env.MONGODB_CONN_STRING).then(()=>{
 
+  app.listen(HTTP_PORT, ()=>{
+      console.log(`server listening on: ${HTTP_PORT}`);
+      
+  });
+}).catch((err)=>{
+  console.log(err)
+})
 // POST /api/listings add new listing item
 app.post('/api/listings', async (req, res) => {
   try {
@@ -125,15 +133,7 @@ app.get((err,req,res,next)=>{
   next();
 });
 
-db.initialize(process.env.MONGODB_CONN_STRING).then(()=>{
 
-  app.listen(HTTP_PORT, ()=>{
-      console.log(`server listening on: ${HTTP_PORT}`);
-      
-  });
-}).catch((err)=>{
-  console.log(err)
-})
 
 
 
