@@ -1,3 +1,17 @@
+/********************************************************************************
+* BTI425 – Assignment 1
+*
+* I declare that this assignment is my own work in accordance with Seneca's
+* Academic Integrity Policy:
+*
+* https://www.senecapolytechnic.ca/about/policies/academic-integrity-policy.html
+*
+* Name: Cha Li Student ID: 046626131 Date: Jan 17 2025
+*
+* Published URL: bti-425-a1-nu.vercel.app
+*
+********************************************************************************/
+
 const express = require("express");
 const app = express();
 const HTTP_PORT = process.env.PORT || 8080;
@@ -8,15 +22,7 @@ const db = new ListingsDB();
 // Add support for incoming JSON entities
 app.use(express.json());
 
-db.initialize(process.env.MONGODB_CONN_STRING).then(()=>{
 
-    app.listen(HTTP_PORT, ()=>{
-        console.log(`server listening on: ${HTTP_PORT}`);
-        
-    });
-}).catch((err)=>{
-    console.log(err)
-})
 
 // POST /api/listings add new listing item
 app.post('/api/listings', async (req, res) => {
@@ -114,9 +120,20 @@ app.delete('/api/listings/:id', async(req, res) => {
     }
 });
 
+app.get((err,req,res,next)=>{
+  console.log(err);
+  next();
+});
 
+db.initialize(process.env.MONGODB_CONN_STRING).then(()=>{
 
-module.exports = app;
+  app.listen(HTTP_PORT, ()=>{
+      console.log(`server listening on: ${HTTP_PORT}`);
+      
+  });
+}).catch((err)=>{
+  console.log(err)
+})
 
 
 
