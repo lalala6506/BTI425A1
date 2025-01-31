@@ -13,6 +13,7 @@
 ********************************************************************************/
 
 const express = require("express");
+const cors = require('cors');
 const app = express();
 const HTTP_PORT = process.env.PORT || 8080;
 const ListingsDB = require("./modules/listingsDB.js"); 
@@ -21,6 +22,7 @@ const db = new ListingsDB();
 
 // Add support for incoming JSON entities
 app.use(express.json());
+app.use(cors());
 
 
 db.initialize(process.env.MONGODB_CONN_STRING).then(()=>{
